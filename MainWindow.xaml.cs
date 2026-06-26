@@ -11,42 +11,43 @@ using System.Windows.Input;
 using System.Windows.Media;
 
 namespace CyberBot3
-{
+{//start of namespace
     public partial class MainWindow : Window
-    {
-        // ══════════════════════════════════════════════════════════════
+    {//start of class
+        
         //  PART 2 DATA (keyword responses + ignore list)
-        // ══════════════════════════════════════════════════════════════
+        
         private ArrayList _reply  = new ArrayList();
         private ArrayList _ignore = new ArrayList();
         private string    _username = string.Empty;
         private int       _chatCounter = 0;
 
-        // ══════════════════════════════════════════════════════════════
-        //  TASK 1 – Task Assistant
-        // ══════════════════════════════════════════════════════════════
+        
+        //  TASK 1  Task Assistant
+        
         private class CyberTask
-        {
+        {//start of CyberTask class
             public int    Id          { get; set; }
             public string Title       { get; set; }
             public string Description { get; set; }
             public string Reminder    { get; set; }
             public bool   IsComplete  { get; set; }
             public DateTime CreatedAt { get; set; }
-        }
+
+        }//end of CyberTask class
         private List<CyberTask> _tasks   = new List<CyberTask>();
         private int             _nextId  = 1;
 
-        // ══════════════════════════════════════════════════════════════
+        
         //  TASK 2 – Quiz
-        // ══════════════════════════════════════════════════════════════
+        
         private class QuizQuestion
-        {
+        {//start of QuizQuestion class
             public string   Question { get; set; }
             public string[] Options  { get; set; }   // null for T/F
             public string   Answer   { get; set; }   // "True"/"False" or option text
             public string   Explanation { get; set; }
-        }
+        }//end of QuizQuestion class
 
         private List<QuizQuestion> _questions;
         private int  _qIndex    = 0;
@@ -64,7 +65,7 @@ namespace CyberBot3
         //  CONSTRUCTOR
         // ══════════════════════════════════════════════════════════════
         public MainWindow()
-        {
+        {//start of MainWindow constructor
             InitializeComponent();
             LoadIgnoreWords();
             LoadReplies();
@@ -73,25 +74,25 @@ namespace CyberBot3
             // Play the Part 2 audio greeting on startup
             var greeting = new voice_greeting();
             greeting.greet();
-        }
+        }//end of MainWindow constructor
 
-        // ══════════════════════════════════════════════════════════════
+        
         //  NAVIGATION BUTTONS
-        // ══════════════════════════════════════════════════════════════
+        
         private void HomeStartBtn_Click(object sender, RoutedEventArgs e)
-        {
+        {//start of HomeStartBtn_Click
             HomeGrid.Visibility     = Visibility.Hidden;
             UsernameGrid.Visibility = Visibility.Visible;
-        }
+        }//end of HomeStartBtn_Click
 
         private void SubmitNameBtn_Click(object sender, RoutedEventArgs e)
-        {
+        {//start of SubmitNameBtn_Click
             string name = UsernameInput.Text.Trim();
             if (string.IsNullOrWhiteSpace(name))
-            {
+            {//start of if
                 UsernameErrorText.Text = "Please enter your name.";
                 return;
-            }
+            }//end of if
 
             _username = name;
             HeaderUsername.Text     = name;
@@ -109,19 +110,19 @@ namespace CyberBot3
                 "Type 'help' to see all commands.");
 
             LogAction("Session started by " + _username);
-        }
+        }//end of SubmitNameBtn_Click
 
         private void UsernameInput_KeyDown(object sender, KeyEventArgs e)
-        {
+        {//start of UsernameInput_KeyDown
             if (e.Key == Key.Enter) SubmitNameBtn_Click(sender, e);
-        }
+        }//end of UsernameInput_KeyDown
 
         private void ExitBtn_Click(object sender, RoutedEventArgs e)
-        {
+        {//start of ExitBtn_Click
             AppendChat("CyberBot", $"Goodbye {_username}! Stay safe online 🛡");
             System.Threading.Tasks.Task.Delay(1000).ContinueWith(_ =>
                 Dispatcher.Invoke(() => Application.Current.Shutdown()));
-        }
+        }//end of ExitBtn_Click
 
         // ══════════════════════════════════════════════════════════════
         //  TASK 3 – NLP / CHAT HANDLER
@@ -129,12 +130,12 @@ namespace CyberBot3
         private void SendBtn_Click(object sender, RoutedEventArgs e) => ProcessChat();
 
         private void MessageInput_KeyDown(object sender, KeyEventArgs e)
-        {
+        {//start of MessageInput_KeyDown
             if (e.Key == Key.Enter) ProcessChat();
-        }
+        }//end of MessageInput_KeyDown
 
         private void ProcessChat()
-        {
+        {//start of ProcessChat
             string raw = MessageInput.Text.Trim();
             if (string.IsNullOrWhiteSpace(raw)) return;
 
@@ -148,15 +149,15 @@ namespace CyberBot3
                 lower.Contains("what have you done for me") ||
                 lower.Contains("activity log") ||
                 lower.Contains("recent actions"))
-            {
+            {//start of if
                 ShowActivityLogInChat();
                 LogAction("User requested activity log");
                 return;
-            }
+            }// end of if
 
             // ── Help command ───────────────────────────────────────
             if (lower == "help" || lower.Contains("what can you do"))
-            {
+            {//start of if
                 AppendChat("CyberBot",
                     "Here's what I can help you with:\n" +
                     "• Ask any cybersecurity question (passwords, phishing, VPN…)\n" +
@@ -166,36 +167,36 @@ namespace CyberBot3
                     "• Type 'show activity log' to see recent actions\n" +
                     "• Type 'exit' to close the app");
                 return;
-            }
+            }// end of if
 
             // ── Exit ───────────────────────────────────────────────
             if (lower == "exit" || lower == "quit" || lower == "bye")
-            {
+            {//start of if
                 ExitBtn_Click(null, null);
                 return;
-            }
+            }// end of if
 
             // ── NLP: Task operations ───────────────────────────────
             if (NlpIsAddTask(lower))
-            {
+            {//start of if
                 string title = ExtractTaskTitle(raw);
                 if (!string.IsNullOrWhiteSpace(title))
-                {
+                {//start of if
                     QuickAddTask(title);
                     AppendChat("CyberBot",
                         $"Task added: '{title}'\n" +
                         "Would you like a reminder? Go to the 📋 Tasks tab to add one, " +
                         "or type: remind me in 3 days for <task name>");
                     LogAction($"Task added via chat: '{title}'");
-                }
+                }// end of if
                 else
-                {
+                {//start of else
                     AppendChat("CyberBot",
                         "I noticed you want to add a task! Please use the 📋 Tasks tab " +
                         "or type: add task <title>");
-                }
+                }// end of else
                 return;
-            }
+            }// end of if
 
             // ── NLP: View tasks ────────────────────────────────────
             if (lower.Contains("view task") || lower.Contains("show task") ||
