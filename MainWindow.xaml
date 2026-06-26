@@ -8,7 +8,7 @@
         Background="#3E2723">
 
     <Window.Resources>
-        <!-- Brown colour palette -->
+        <!-- Brown as a main colour palette -->
         <SolidColorBrush x:Key="DarkBrown"    Color="#3E2723"/>
         <SolidColorBrush x:Key="MedBrown"     Color="#5D4037"/>
         <SolidColorBrush x:Key="LightBrown"   Color="#8D6E63"/>
